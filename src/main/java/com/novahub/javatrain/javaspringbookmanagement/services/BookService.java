@@ -71,12 +71,12 @@ public class BookService {
     }
     
     
-    public void enableBook(long id) {
+    public void enableBook(long id,boolean value) {
         Optional<Book> book = booksRepository.findBookById(id);
         if (book.isEmpty()) {
             throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
         }
-        book.get().setEnabled(true);
+        book.get().setEnabled(value);
         booksRepository.save(book.get());
     }
 }

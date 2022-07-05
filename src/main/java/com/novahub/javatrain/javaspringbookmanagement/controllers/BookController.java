@@ -53,7 +53,7 @@ public class BookController {
     
     @PostMapping("/enable/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void enableBook(@PathVariable long id) {
-        booksServices.enableBook(id);
+    public void enableBook(@PathVariable long id, @RequestParam boolean value) {
+        booksServices.enableBook(id,value);
     }
 }
