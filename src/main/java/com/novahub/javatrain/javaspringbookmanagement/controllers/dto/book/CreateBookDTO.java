@@ -6,9 +6,9 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class RequestEditBookDto {
+@NoArgsConstructor
+public class CreateBookDTO {
     @NotNull
     private String title;
 
@@ -19,7 +19,6 @@ public class RequestEditBookDto {
 
     private String image;
 
-    @NotNull
-    private boolean enabled;
     
+
 }

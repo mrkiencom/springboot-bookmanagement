@@ -1,8 +1,8 @@
 package com.novahub.javatrain.javaspringbookmanagement.services;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EnableBookDTO;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundException;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
@@ -29,7 +29,7 @@ public class BookService {
         }
     }
     
-    public Book createNewBook(User user, final RequestCreateBookDto requestCreateBookDto) {
+    public Book createNewBook(User user, final CreateBookDTO requestCreateBookDto) {
         final Book book = Book.builder()
                 .title(requestCreateBookDto.getTitle())
                 .author(requestCreateBookDto.getAuthor())
@@ -48,7 +48,7 @@ public class BookService {
         }
     }
     
-    public void editBook(User user, RequestEditBookDto editBookDto, long id) {
+    public void editBook(User user, EditBookDTO editBookDto, long id) {
         Book existedBook = this.checkExistedBookById(user, id);
         existedBook.setTitle(editBookDto.getTitle());
         existedBook.setAuthor(editBookDto.getAuthor());

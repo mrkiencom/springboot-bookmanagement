@@ -1,8 +1,8 @@
 package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EnableBookDTO;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
 import com.novahub.javatrain.javaspringbookmanagement.sercurity.UserInfo;
@@ -32,12 +32,12 @@ public class BookController {
     }
     
     @PostMapping
-    public Book createNewBook(@Valid @RequestBody RequestCreateBookDto requestCreateBookDto) {
+    public Book createNewBook(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
         return booksServices.createNewBook(userInfo.getInfo(), requestCreateBookDto);
     }
     
     @PutMapping(value = "{id}")
-    public void editBook(@Valid @RequestBody RequestEditBookDto editBookDto, @PathVariable long id) {
+    public void editBook(@Valid @RequestBody EditBookDTO editBookDto, @PathVariable long id) {
         booksServices.editBook(userInfo.getInfo(), editBookDto, id);
     }
     
