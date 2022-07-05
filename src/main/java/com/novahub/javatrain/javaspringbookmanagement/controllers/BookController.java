@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,12 +31,12 @@ public class BookController {
     }
     
     @PostMapping
-    public Book createNewBook(@RequestBody RequestCreateBookDto requestCreateBookDto) {
+    public Book createNewBook(@Valid @RequestBody RequestCreateBookDto requestCreateBookDto) {
         return booksServices.createNewBook(userInfo.getInfo(), requestCreateBookDto);
     }
     
     @PutMapping(value = "{id}")
-    public void editBook(@RequestBody RequestEditBookDto editBookDto, @PathVariable long id) {
+    public void editBook(@Valid @RequestBody RequestEditBookDto editBookDto, @PathVariable long id) {
         booksServices.editBook(userInfo.getInfo(), editBookDto, id);
     }
     

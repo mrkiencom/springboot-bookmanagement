@@ -27,17 +27,14 @@ public class TokenProvider {
     @Value("${jwt-key}")
     private String signingKey;
     
-//    public String getUsernameFromToken(String token) {
-//        return getClaimFromToken(token, Claims::getSubject);
-//    }
+
     public Claims getClaimsFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
     }
     public String getUsernameFromToken(String token) {
         Claims claims = getClaimsFromJwtToken(token);
         if (claims != null ) {
-            String x =  claims.getSubject();
-            return x;
+            return claims.getSubject();
         }
         return null;
     }
