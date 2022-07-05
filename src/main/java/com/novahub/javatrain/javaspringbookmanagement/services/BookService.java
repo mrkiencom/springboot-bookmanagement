@@ -1,5 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.services;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EnableBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundException;
@@ -71,12 +72,12 @@ public class BookService {
     }
     
     
-    public void enableBook(long id,boolean value) {
+    public void enableBook(long id, EnableBookDTO enableBookDTO) {
         Optional<Book> book = booksRepository.findBookById(id);
         if (book.isEmpty()) {
             throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
         }
-        book.get().setEnabled(value);
+        book.get().setEnabled(enableBookDTO.isEnable());
         booksRepository.save(book.get());
     }
 }

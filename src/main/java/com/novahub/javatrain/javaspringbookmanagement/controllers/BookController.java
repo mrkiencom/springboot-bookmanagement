@@ -1,5 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EnableBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
@@ -53,7 +54,7 @@ public class BookController {
     
     @PostMapping("/enable/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void enableBook(@PathVariable long id, @RequestParam boolean value) {
-        booksServices.enableBook(id,value);
+    public void enableBook(@PathVariable long id, @RequestBody EnableBookDTO enableBookDTO) {
+        booksServices.enableBook(id,enableBookDTO);
     }
 }
