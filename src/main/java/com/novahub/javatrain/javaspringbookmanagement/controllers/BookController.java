@@ -51,7 +51,7 @@ public class BookController {
         booksServices.deleteBook(id);
     }
     
-    @PostMapping("/status/{id}/enable")
+    @PostMapping("/status/{id}/enabled")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void enableBook(@PathVariable long id) {
         booksServices.enableBook(id, true);

@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -45,56 +44,6 @@ public class BookControllerTest {
     private CreateBookDTO createBookDTO;
     private EditBookDTO editBookDTO;
     
-    
-    
-    @DisplayName("Find book by id and return status 200")
-    @Test
-    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER_ROLE")
-    public void findBookByIdReturnStatus200() throws Exception {
-        given(bookService.getBookById(1)).willReturn(book);
-        mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", 1)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-    }
-    
-    @DisplayName("create book and return status 201")
-    @Test
-    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER_ROLE")
-    public void createBookReturnStatus201() throws Exception {
-        userRole = Role.builder().id(1).name("USER_ROLE").build();
-        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
-        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).build();
-        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
-        editBookDTO = EditBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
-        createBookDTO = CreateBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
-    
-        given(bookService.createNewBook(user, createBookDTO)).willReturn(book);
-        mockMvc.perform(post("/books")
-                        .content(asJsonString(createBookDTO))
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isCreated());
-    }
-
-//    @DisplayName("edit book and return status 200")
-//    @Test
-//    @WithMockUser(username = "test1@gmail.com",password = "123",roles = "USER_ROLE")
-//    public void editBookReturnStatus200() throws Exception {
-//        given(bookService.editBook().willReturn(void)
-//        mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", 1)
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
-    
-    @DisplayName("find all book and return status 201")
-    @Test
-    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER_ROLE")
-    public void ListBookReturnStatus200() throws Exception {
-        given(bookService.getListBooks("", "")).willReturn(books);
-        mockMvc.perform(MockMvcRequestBuilders.get("/books")
-                        .contentType(MediaType.APPLICATION_JSON))
-                        .andExpect(status().isOk());
-    }
-    
     public static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
@@ -103,4 +52,92 @@ public class BookControllerTest {
         }
     }
     
+    @DisplayName("Find book by id and return status 200")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void findBookByIdReturnStatus_200() throws Exception {
+        userRole = Role.builder().id(1).name("USER_ROLE").build();
+        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
+        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
+        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
+        given(bookService.getBookById(1)).willReturn(book);
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", 1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    
+    
+    @DisplayName("create book and return status 201")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void createBookReturnStatus_201() throws Exception {
+        userRole = Role.builder().id(1).name("USER_ROLE").build();
+        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
+        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
+        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
+        createBookDTO = CreateBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
+        given(bookService.createNewBook(user, createBookDTO)).willReturn(book);
+        mockMvc.perform(MockMvcRequestBuilders.post("/books")
+                        .content(asJsonString(createBookDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    
+    @DisplayName("edit book and return status 200")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void editBookReturnStatus_200() throws Exception {
+        userRole = Role.builder().id(1).name("USER_ROLE").build();
+        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
+        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
+        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
+        createBookDTO = CreateBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
+        editBookDTO = EditBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", 1)
+                        .content(asJsonString(createBookDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    
+    @DisplayName("find all book and return status 201")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void listBookReturnStatus_200() throws Exception {
+        given(bookService.getListBooks("", "")).willReturn(books);
+        mockMvc.perform(MockMvcRequestBuilders.get("/books")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    
+    @DisplayName("enable book with admin and return status 403")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void enableBookReturnStatus_403() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/books/status/{id}/enabled",1)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+        
+    }
+    @DisplayName("enable book with admin and return status 200")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
+    public void enableBookReturnStatus_200() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/books/status/{id}/enabled",1)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    }
+    
+    @DisplayName("delete book with admin and return status 403")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void deleteBookReturnStatus_403() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/{id}",1)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isForbidden());
+    }
+    
+    @DisplayName("delete book with admin and return status 200")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
+    public void deleteBookReturnStatus_200() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/books/{id}",1)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    }
 }
