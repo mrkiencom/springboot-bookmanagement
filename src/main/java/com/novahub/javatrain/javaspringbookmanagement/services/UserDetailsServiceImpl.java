@@ -6,6 +6,7 @@ import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
     
     @Override
-    public UserInfoDetailsImpl loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         
         User user = userRepository.findByEmail(email);
         if (user == null) {
@@ -29,12 +30,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Role role = user.getRole();
         grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
         
-        return UserInfoDetailsImpl.builder()
-                .email(email)
-                .password(user.getPassword())
-                .id(user.getId())
-                .username("")
-                .authorities(grantedAuthorities)
-                .build();
+//        return UserInfoDetailsImpl.builder()
+//                .email(email)
+//                .password(user.getPassword())
+//                .id(user.getId())
+//                .username(email)
+//                .authorities(grantedAuthorities)
+//                .build();
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(), user.getPassword(), grantedAuthorities);
     }
 }

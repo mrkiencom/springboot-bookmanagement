@@ -2,7 +2,6 @@ package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EnableBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
 import com.novahub.javatrain.javaspringbookmanagement.sercurity.UserInfo;
@@ -28,7 +27,7 @@ public class BookController {
     
     @GetMapping("{id}")
     public Book getBookById(@PathVariable long id) {
-        return booksServices.getBookById(userInfo.getInfo(), id);
+        return booksServices.getBookById(id);
     }
     
     @PostMapping
@@ -52,9 +51,15 @@ public class BookController {
         booksServices.deleteBook(id);
     }
     
-    @PostMapping("/enable/{id}")
+    @PostMapping("/status/{id}/enable")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void enableBook(@PathVariable long id, @RequestBody EnableBookDTO enableBookDTO) {
-        booksServices.enableBook(id,enableBookDTO);
+    public void enableBook(@PathVariable long id) {
+        booksServices.enableBook(id, true);
+    }
+    
+    @PostMapping("/status/{id}/disabled")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void disableBook(@PathVariable long id) {
+        booksServices.enableBook(id, false);
     }
 }

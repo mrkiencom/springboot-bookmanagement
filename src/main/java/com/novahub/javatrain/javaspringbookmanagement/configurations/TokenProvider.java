@@ -1,7 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.configurations;
 
 
-import com.novahub.javatrain.javaspringbookmanagement.services.UserInfoDetailsImpl;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -75,10 +74,10 @@ public class TokenProvider {
                 .compact();
     }
     
-    public Boolean validateToken(String token, UserInfoDetailsImpl userDetails) {
+    public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = getUsernameFromToken(token);
         return (
-                username.equals(userDetails.getEmail())
+                username.equals(userDetails.getUsername())
                         && !isTokenExpired(token));
     }
     

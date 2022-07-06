@@ -1,11 +1,11 @@
 package com.novahub.javatrain.javaspringbookmanagement.configurations;
 
 import com.novahub.javatrain.javaspringbookmanagement.services.UserDetailsServiceImpl;
-import com.novahub.javatrain.javaspringbookmanagement.services.UserInfoDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            UserInfoDetailsImpl userDetails = userDetailsService.loadUserByUsername(username);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             
             if(userDetails != null){
                 

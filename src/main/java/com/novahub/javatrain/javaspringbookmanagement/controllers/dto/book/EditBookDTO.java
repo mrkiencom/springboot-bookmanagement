@@ -18,8 +18,4 @@ public class EditBookDTO {
     private String description;
 
     private String image;
-
-    @NotNull
-    private boolean enabled;
-    
 }
