@@ -4,9 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
-import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
-import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Role;
-import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
 import com.novahub.javatrain.javaspringbookmanagement.services.BookService;
 import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +18,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.List;
-
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -36,13 +30,8 @@ public class BookControllerTest {
     
     @Autowired
     private MockMvc mockMvc;
-    private List<Book> books;
-    private Book book;
-    private User user;
-    private Role userRole;
-    private Role adminRole;
+  
     private CreateBookDTO createBookDTO;
-    private EditBookDTO editBookDTO;
     
     public static String asJsonString(final Object obj) {
         try {
@@ -56,14 +45,18 @@ public class BookControllerTest {
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void findBookByIdReturnStatus_200() throws Exception {
-        userRole = Role.builder().id(1).name("USER_ROLE").build();
-        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
-        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
-        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
-        given(bookService.getBookById(1)).willReturn(book);
         mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+    
+    @DisplayName("Find book by id and return status 400")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void findBookByIdReturnStatus_400() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", "1+2")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
     
     
@@ -71,12 +64,7 @@ public class BookControllerTest {
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void createBookReturnStatus_201() throws Exception {
-        userRole = Role.builder().id(1).name("USER_ROLE").build();
-        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
-        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
-        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
         createBookDTO = CreateBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
-        given(bookService.createNewBook(user, createBookDTO)).willReturn(book);
         mockMvc.perform(MockMvcRequestBuilders.post("/books")
                         .content(asJsonString(createBookDTO))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -87,23 +75,28 @@ public class BookControllerTest {
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void editBookReturnStatus_200() throws Exception {
-        userRole = Role.builder().id(1).name("USER_ROLE").build();
-        adminRole = Role.builder().id(1).name("ADMIN_ROLE").build();
-        user = User.builder().email("test1@gmail.com").firstName("test").lastName("1").role(userRole).password("123").build();
-        book = Book.builder().id(1).title("title-test").author("author-test").description("description-test").image("image-test").enabled(false).user(user).build();
-        createBookDTO = CreateBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
-        editBookDTO = EditBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
+        EditBookDTO editBookDTO = EditBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
         mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", 1)
-                        .content(asJsonString(createBookDTO))
+                        .content(asJsonString(editBookDTO))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+    
+    @DisplayName("edit book and return status 400")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void editBookReturnStatus_400() throws Exception {
+        EditBookDTO editBookDTO = EditBookDTO.builder().title("title-test").author("author-test").description("description-test").image("image-test").build();
+        mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", "1+2")
+                        .content(asJsonString(editBookDTO))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
     
     @DisplayName("find all book and return status 201")
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void listBookReturnStatus_200() throws Exception {
-        given(bookService.getListBooks("", "")).willReturn(books);
         mockMvc.perform(MockMvcRequestBuilders.get("/books")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
