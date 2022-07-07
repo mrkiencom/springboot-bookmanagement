@@ -28,7 +28,8 @@ public class BookService {
                 .title(requestCreateBookDto.getTitle())
                 .author(requestCreateBookDto.getAuthor())
                 .description(requestCreateBookDto.getDescription())
-                .enabled(false).user(user)
+                .enabled(false)
+                .user(user)
                 .build();
         return booksRepository.save(book);
     }
@@ -36,8 +37,8 @@ public class BookService {
     public Book checkExistedBookById(User user, long id) {
         Book book = getBookOrThrow(id);
         
-        if(book.getUser().getId() != user.getId()){
-            throw new BookNotFoundException( id);
+        if (book.getUser().getId() != user.getId()) {
+            throw new BookNotFoundException(id);
         }
         
         return book;
@@ -47,7 +48,7 @@ public class BookService {
         Book existedBook = this.checkExistedBookById(user, id);
         existedBook.setTitle(editBookDto.getTitle());
         existedBook.setAuthor(editBookDto.getAuthor());
-        existedBook.setDescription(editBookDto.getAuthor());
+        existedBook.setDescription(editBookDto.getDescription());
         booksRepository.save(existedBook);
     }
     

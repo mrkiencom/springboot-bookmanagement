@@ -15,8 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -47,7 +47,7 @@ public class AuthControllerTest {
                                             .firstName("test")
                                             .lastName("test")
                                             .build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/auths/sign-up")
+        mockMvc.perform(post("/auths/sign-up")
                         .content(asJsonString(requestSignUpDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -60,11 +60,9 @@ public class AuthControllerTest {
                                             .email("test@gmail.com")
                                             .password("test")
                                             .build();
-        mockMvc.perform(MockMvcRequestBuilders.post("/auths/sign-up")
+        mockMvc.perform(post("/auths/sign-in")
                         .content(asJsonString(requestSignInDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
-    
-    
 }
