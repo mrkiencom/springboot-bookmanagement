@@ -26,18 +26,20 @@ public class BookController {
     private BookRepository bookRepository;
     
     @GetMapping("{id}")
+    @ResponseBody
     public Book getBookById(@PathVariable long id) {
         return booksServices.getBookById(id);
     }
     
     @PostMapping
     public Book createNewBook(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
-        return booksServices.createNewBook(userInfo.getInfo(), requestCreateBookDto);
+        
+        return booksServices.createNewBook(requestCreateBookDto);
     }
     
     @PutMapping(value = "{id}")
     public void editBook(@Valid @RequestBody EditBookDTO editBookDto, @PathVariable long id) {
-        booksServices.editBook(userInfo.getInfo(), editBookDto, id);
+        booksServices.editBook( editBookDto, id);
     }
     
     @GetMapping

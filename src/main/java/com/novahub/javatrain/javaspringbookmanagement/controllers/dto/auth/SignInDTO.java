@@ -3,21 +3,15 @@ package com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth;
 import com.sun.istack.NotNull;
 import lombok.*;
 
-@Builder
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
 @NoArgsConstructor
-public class RequestSignUpDto {
+@AllArgsConstructor
+public class SignInDTO {
     @NotNull
     private String email;
 
     @NotNull
     private String password;
-
-    private String firstName;
-
-    private String lastName;
-
-    private String avatar;
 }

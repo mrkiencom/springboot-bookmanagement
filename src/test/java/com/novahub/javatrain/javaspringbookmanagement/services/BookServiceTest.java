@@ -2,10 +2,10 @@ package com.novahub.javatrain.javaspringbookmanagement.services;
 
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundException;
-import com.novahub.javatrain.javaspringbookmanagement.mock.MockValue;
+import com.novahub.javatrain.javaspringbookmanagement.fakes.BookFaker;
+import com.novahub.javatrain.javaspringbookmanagement.fakes.UserFaker;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
-import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,23 +29,22 @@ public class BookServiceTest {
     @InjectMocks
     BookService bookService;
     
-    private User user;
-    
-    
+    @Mock
+    AuthService authService;
     
     @Test
     public void createNewBook_Success(){
-        CreateBookDTO createBookDTO = MockValue.mockCreateBook;
+        CreateBookDTO createBookDTO = BookFaker.mockCreateBook;
         final Book book = Book.builder()
                 .title(createBookDTO.getTitle())
                 .author(createBookDTO.getAuthor())
                 .description(createBookDTO.getDescription())
                 .enabled(false)
-                .user(MockValue.mockUser)
+                .user(UserFaker.createUser())
                 .build();
         
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-        Book savedBook = bookService.createNewBook(MockValue.mockUser, createBookDTO);
+        Book savedBook = bookService.createNewBook( createBookDTO);
         verify(bookRepository).save(any(Book.class));
         assertEquals(book, savedBook);
     }
@@ -58,22 +57,25 @@ public class BookServiceTest {
     
     @Test
     public void getBookById_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(MockValue.mockBook) );
-        assertEquals(bookService.getBookById(1L),MockValue.mockBook);
+        when(authService.getMe()).thenReturn(UserFaker.createUser());
+        Book book = BookFaker.createBook();
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(book));
+        assertEquals(bookService.getBookById(1L), book);
     }
     
     @Test
     public void editBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(MockValue.mockBook) );
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
         
-        Book editBook = MockValue.mockBook;
-        editBook.setTitle(MockValue.mockCreateBook.getTitle());
-        editBook.setAuthor(MockValue.mockCreateBook.getAuthor());
-        editBook.setDescription(MockValue.mockCreateBook.getDescription());
+        Book editBook = BookFaker.createBook();
+        editBook.setTitle(BookFaker.mockCreateBook.getTitle());
+        editBook.setAuthor(BookFaker.mockCreateBook.getAuthor());
+        editBook.setDescription(BookFaker.mockCreateBook.getDescription());
         
         when(bookRepository.save(any(Book.class))).thenReturn(editBook);
+        when(authService.getMe()).thenReturn(UserFaker.createUser());
         assertDoesNotThrow(()->{
-            bookService.editBook(MockValue.mockUser,MockValue.editBookDTO,1L);
+            bookService.editBook( BookFaker.editBookDTO,1L);
         });
     }
     
@@ -85,9 +87,9 @@ public class BookServiceTest {
     
     @Test
     public void enableBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(MockValue.mockBook) );
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
         
-        Book book = MockValue.mockBook;
+        Book book = BookFaker.createBook();
         book.setEnabled(false);
         
         when(bookRepository.save(any(Book.class))).thenReturn(book);
@@ -103,9 +105,9 @@ public class BookServiceTest {
     
     @Test
     public void deleteBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(MockValue.mockBook) );
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
         
-        Book book = MockValue.mockBook;
+        Book book = BookFaker.createBook();
         book.setEnabled(false);
         assertDoesNotThrow(()->{
             bookService.deleteBook(1L);
@@ -123,7 +125,7 @@ public class BookServiceTest {
         final String search = "test";
         final String orderBy = "test";
         List<Book> bookList = new ArrayList<>();
-        bookList.add(MockValue.mockBook);
+        bookList.add(BookFaker.createBook());
      
         when(bookRepository.findAll(search,orderBy)).thenReturn(bookList);
         assertEquals(bookService.getListBooks(search,orderBy),bookList);

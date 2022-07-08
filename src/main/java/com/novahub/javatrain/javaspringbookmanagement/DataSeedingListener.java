@@ -1,6 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement;
 
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.RequestSignUpDto;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignUpDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.RoleRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.UserRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Role;
@@ -29,7 +29,7 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
 
     @Autowired
     private RoleRepository roleRepository;
-    
+
     @Value("${jwt-key}")
     private String signingKey;
 
@@ -41,10 +41,10 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
 
     private void addAdmin(String email,String password){
         Role admin = roleRepository.findRoleByName("ROLE_ADMIN");
-        RequestSignUpDto addAdmin = RequestSignUpDto.builder().email(email).password(password).build();
-        if(userRepository.findByEmail(email) == null){
+        SignUpDTO addAdmin = SignUpDTO.builder().email(email).password(password).build();
+        if(userRepository.findUserByEmail(email) == null){
             authService.signUp(addAdmin);
-            User newAdmin = userRepository.findByEmail(email);
+            User newAdmin = userRepository.findUserByEmail(email);
             newAdmin.setRole(admin);
             userRepository.save(newAdmin);
         }
@@ -54,12 +54,12 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
         addRoleIfMissing("ADMIN",null);
         addRoleIfMissing("USER",null);
         addAdmin("admin@gmail.com","123");
-    
+
         if(signingKey == null || signingKey.length() ==0){
             String jws = Jwts.builder()
                     .setSubject("BookStore")
                     .signWith(SignatureAlgorithm.HS256, "BookStoreApi").compact();
-        
+
             System.out.println("Use this jwt key:");
             System.out.println("jwt-key=" + jws);
         }

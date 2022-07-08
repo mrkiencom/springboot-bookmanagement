@@ -18,10 +18,10 @@ public class UserInfo {
     @Autowired
     private UserRepository userRepository;
     
-    public User getInfo() {
+    public User getMe() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String email = userDetails.getUsername();
-        return userRepository.findByEmail(email);
+        return userRepository.findUserByEmail(email);
     }
 }

@@ -19,11 +19,15 @@ public class BookService {
     @Autowired
     private BookRepository booksRepository;
     
+    @Autowired
+    private AuthService authService;
+    
     public Book getBookById(long id) {
         return getBookOrThrow(id);
     }
     
-    public Book createNewBook(User user, final CreateBookDTO requestCreateBookDto) {
+    public Book createNewBook( final CreateBookDTO requestCreateBookDto) {
+        User user = this.authService.getMe();
         final Book book = Book.builder()
                 .title(requestCreateBookDto.getTitle())
                 .author(requestCreateBookDto.getAuthor())
@@ -44,7 +48,8 @@ public class BookService {
         return book;
     }
     
-    public void editBook(User user, final EditBookDTO editBookDto, long id) {
+    public void editBook( final EditBookDTO editBookDto, long id) {
+        User user = this.authService.getMe();
         Book existedBook = this.checkExistedBookById(user, id);
         existedBook.setTitle(editBookDto.getTitle());
         existedBook.setAuthor(editBookDto.getAuthor());
