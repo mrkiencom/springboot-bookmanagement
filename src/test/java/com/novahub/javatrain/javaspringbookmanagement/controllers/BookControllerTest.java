@@ -179,4 +179,26 @@ public class BookControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/books/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
+    
+    @DisplayName("enable book with admin and return status 403")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
+    public void disableBookReturnStatus_403() throws Exception {
+        
+        mockMvc.perform(post("/books/status/{id}/disabled", 1)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+        
+    }
+    
+    @DisplayName("enable book with admin and return status 200")
+    @Test
+    @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
+    public void disableBookReturnStatus_200() throws Exception {
+        assertDoesNotThrow(() -> {
+            bookService.enableBook(  1,false);
+        });
+        mockMvc.perform(post("/books/status/{id}/disabled", 1)
+                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+    }
 }

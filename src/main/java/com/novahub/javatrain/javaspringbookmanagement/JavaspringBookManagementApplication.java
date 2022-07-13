@@ -9,7 +9,7 @@ public class JavaspringBookManagementApplication {
     
     public static void main(String[] args) {
         SpringApplication.run(JavaspringBookManagementApplication.class, args);
-        try (Session session = HibernateUtils.getSessionFactory().openSession();) {
+        try (Session session = HibernateUtils.getSessionFactory().openSession()) {
             session.beginTransaction();
             session.getTransaction().commit();
         }

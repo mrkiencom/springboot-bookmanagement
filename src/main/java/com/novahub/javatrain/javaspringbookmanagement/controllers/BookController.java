@@ -4,7 +4,6 @@ import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.Creat
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
-import com.novahub.javatrain.javaspringbookmanagement.sercurity.UserInfo;
 import com.novahub.javatrain.javaspringbookmanagement.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,8 +18,6 @@ public class BookController {
     
     @Autowired
     private BookService booksServices;
-    @Autowired
-    private UserInfo userInfo;
     
     @Autowired
     private BookRepository bookRepository;
@@ -32,7 +29,7 @@ public class BookController {
     }
     
     @PostMapping
-    public Book createNewBook(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
+    public Book createNew(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
         
         return booksServices.createNewBook(requestCreateBookDto);
     }

@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book,Long> {
     Optional<Book> findBookByIdAndUser(long id, User user);
     
-    @Query(value = "SELECT * FROM Book WHERE title LIKE CONCAT('%',:search,'%') or author LIKE CONCAT('%',:search,'%')  ORDER BY :orderBy", nativeQuery = true)
+    @Query(value = "SELECT * FROM Book WHERE title LIKE CONCAT('%',:search,'%') or author LIKE CONCAT('%',:search,'%') ORDER BY :orderBy", nativeQuery = true)
     List<Book> findAll(@Param("search") String search, String orderBy);
     
     Optional<Book> findBookById(long id);

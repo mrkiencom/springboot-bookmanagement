@@ -11,7 +11,7 @@ public class UserFaker {
     
     public static User createUser() {
         return User.builder()
-                .id(1)
+                .id(15)
                 .email("test@gmail.com")
                 .enabled(true)
                 .password(new BCryptPasswordEncoder().encode("test"))
@@ -29,12 +29,17 @@ public class UserFaker {
     public static final User mockUserExisted = User.builder()
             .email("kien@gmail.com")
             .enabled(true)
-            .password(new BCryptPasswordEncoder().encode("test"))
+            .password(new BCryptPasswordEncoder().encode("123"))
             .role(mockRole)
             .build();
     
     public static final SignInDTO signInDTO = SignInDTO.builder()
             .email("test@gmail.com")
-            .password("test")
+            .password("123")
+            .build();
+    
+    public static final SignInDTO signInDTOErrorWithEmailInvalid = SignInDTO.builder()
+            .email("aaaaaaaaaaa@gmail.com")
+            .password("123")
             .build();
 }

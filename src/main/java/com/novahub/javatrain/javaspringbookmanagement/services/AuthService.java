@@ -31,6 +31,7 @@ import javax.transaction.Transactional;
 public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
+    
     @Autowired
     private UserRepository userRepository;
     
@@ -59,14 +60,13 @@ public class AuthService {
         return userRepository.save(user);
     }
     
-    public AuthToken signIn(SignInDTO signInDTO) {
+    public AuthToken signIn(final SignInDTO signInDTO) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         signInDTO.getEmail(),
                         signInDTO.getPassword()
                 )
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         final String token = jwtTokenUtil.generateToken(authentication, signInDTO.getEmail());
         return new AuthToken(token);
     }

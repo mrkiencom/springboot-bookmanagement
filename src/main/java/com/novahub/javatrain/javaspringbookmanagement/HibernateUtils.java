@@ -1,20 +1,19 @@
 package com.novahub.javatrain.javaspringbookmanagement;
 
+import lombok.experimental.UtilityClass;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
+@UtilityClass
+
 public class HibernateUtils {
 
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static  SessionFactory sessionFactory = buildSessionFactory();
 
-    private HibernateUtils() {
-        super();
-    }
-
-    private static SessionFactory buildSessionFactory() {
+    static SessionFactory buildSessionFactory() {
         ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder() //
                 .configure()
                 .build();
