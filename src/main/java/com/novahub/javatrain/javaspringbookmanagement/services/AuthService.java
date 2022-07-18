@@ -5,12 +5,12 @@ import com.novahub.javatrain.javaspringbookmanagement.configurations.TokenProvid
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.AuthToken;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignInDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignUpDTO;
-import com.novahub.javatrain.javaspringbookmanagement.exceptions.UserExistedExeption;
+import com.novahub.javatrain.javaspringbookmanagement.exceptions.UserExistedException;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.RoleRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.UserRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Role;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,29 +23,26 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-
 @Repository
 @Transactional
 @Configuration
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-    @Autowired
-    private AuthenticationManager authenticationManager;
     
-    @Autowired
-    private UserRepository userRepository;
+    private final AuthenticationManager authenticationManager;
     
-    @Autowired
-    private RoleRepository roleRepository;
+    private final UserRepository userRepository;
     
-    @Autowired
-    private TokenProvider jwtTokenUtil;
+    private final RoleRepository roleRepository;
+    
+    private final TokenProvider jwtTokenUtil;
     
     public User signUp(SignUpDTO signUpDTO) {
         String email = signUpDTO.getEmail();
         User userExisted = userRepository.findUserByEmail(email);
         if(userExisted != null){
-            throw new UserExistedExeption(email);
+            throw new UserExistedException(email);
         }
         Role userRole = roleRepository.findRoleByName("ROLE_USER");
         User user = User.builder()

@@ -5,7 +5,7 @@ import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditB
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
 import com.novahub.javatrain.javaspringbookmanagement.services.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,14 +13,13 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
     
-    @Autowired
-    private BookService booksServices;
+    private final BookService booksServices;
     
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
     
     @GetMapping("{id}")
     @ResponseBody

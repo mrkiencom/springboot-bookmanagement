@@ -18,7 +18,6 @@ public class UserFaker {
                 .role(mockRole)
                 .build();
     }
-   
     
     public static final SignUpDTO signUpDTO = SignUpDTO.builder()
             .email("test@gmail.com")
@@ -38,8 +37,4 @@ public class UserFaker {
             .password("123")
             .build();
     
-    public static final SignInDTO signInDTOErrorWithEmailInvalid = SignInDTO.builder()
-            .email("aaaaaaaaaaa@gmail.com")
-            .password("123")
-            .build();
 }

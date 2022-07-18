@@ -26,14 +26,14 @@ public class TokenProvider {
     @Value("${jwt-key}")
     private String signingKey;
     
-
+    
     public Claims getClaimsFromJwtToken(String token) {
         return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
     }
     
     public String getUsernameFromToken(String token) {
         Claims claims = getClaimsFromJwtToken(token);
-        if (claims != null ) {
+        if (claims != null) {
             return claims.getSubject();
         }
         return null;
@@ -64,13 +64,12 @@ public class TokenProvider {
         final String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
-        
         return Jwts.builder()
                 .setSubject(email)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(SignatureAlgorithm.HS256, signingKey)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS*1000))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY_SECONDS * 1000))
                 .compact();
     }
     
@@ -84,16 +83,12 @@ public class TokenProvider {
     public UsernamePasswordAuthenticationToken getAuthentication(final String token, final Authentication ignoredExistingAuth, final UserDetails userDetails) {
         
         final JwtParser jwtParser = Jwts.parser().setSigningKey(signingKey);
-        
         final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
-        
         final Claims claims = claimsJws.getBody();
-        
         final Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
-        
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 }

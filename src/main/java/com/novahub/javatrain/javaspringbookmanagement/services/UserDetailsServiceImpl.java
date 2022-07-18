@@ -4,7 +4,7 @@ import com.novahub.javatrain.javaspringbookmanagement.exceptions.EmailInvalidExc
 import com.novahub.javatrain.javaspringbookmanagement.repositories.UserRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Role;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +16,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        
         User user = userRepository.findUserByEmail(email);
         if (user == null) {
             throw new EmailInvalidException(email);
@@ -30,7 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
         Role role = user.getRole();
         grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
-        
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(), grantedAuthorities);
     }

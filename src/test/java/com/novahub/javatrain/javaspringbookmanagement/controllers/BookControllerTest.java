@@ -43,8 +43,6 @@ public class BookControllerTest {
     @MockBean
     private BookService bookService;
     
-  
-    
     @Autowired
     private MockMvc mockMvc;
     
@@ -67,7 +65,6 @@ public class BookControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(jsonPath("$.id", Matchers.equalTo(1)));
-        
     }
     
     @DisplayName("Find book by id and return status 400")
@@ -76,7 +73,7 @@ public class BookControllerTest {
     public void findBookByIdReturnStatus_400() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", "1+2")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                        .andExpect(status().isBadRequest());
     }
     
     @DisplayName("Find book by id and return status 404")
@@ -86,9 +83,8 @@ public class BookControllerTest {
         when(bookService.getBookById(33)).thenThrow(new BookNotFoundException(33));
         mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", 33)
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+                        .andExpect(status().isNotFound());
     }
-    
     
     @DisplayName("create book and return status 201")
     @Test
@@ -106,18 +102,15 @@ public class BookControllerTest {
                         .andExpect(jsonPath("$.id", Matchers.equalTo(1)));
     }
     
-    
     @DisplayName("edit book and return status 200")
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void editBookReturnStatus_200() throws Exception {
-        assertDoesNotThrow(() -> {
-            bookService.editBook( BookFaker.editBookDTO, 1);
-        });
+        assertDoesNotThrow(() -> bookService.editBook(BookFaker.editBookDTO, 1));
         mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", 1)
                         .content(asJsonString(BookFaker.editBookDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .andExpect(status().isOk());
     }
     
     @DisplayName("edit book and return status 400")
@@ -127,7 +120,7 @@ public class BookControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", "1+2")
                         .content(asJsonString(BookFaker.editBookDTO))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                        .andExpect(status().isBadRequest());
     }
     
     @DisplayName("find all book and return status 201")
@@ -136,27 +129,23 @@ public class BookControllerTest {
     public void listBookReturnStatus_200() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/books")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                        .andExpect(status().isOk());
     }
     
     @DisplayName("enable book with admin and return status 403")
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void enableBookReturnStatus_403() throws Exception {
-        
         mockMvc.perform(post("/books/status/{id}/enabled", 1)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-        
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isForbidden());
     }
     
     @DisplayName("enable book with admin and return status 200")
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
     public void enableBookReturnStatus_200() throws Exception {
-        assertDoesNotThrow(() -> {
-            bookService.enableBook(  1,true);
-        });
+        assertDoesNotThrow(() -> bookService.enableBook(1, true));
         mockMvc.perform(post("/books/status/{id}/enabled", 1)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
@@ -173,9 +162,7 @@ public class BookControllerTest {
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
     public void deleteBookReturnStatus_200() throws Exception {
-        assertDoesNotThrow(() -> {
-            bookService.deleteBook(  1);
-        });
+        assertDoesNotThrow(() -> bookService.deleteBook(1));
         mockMvc.perform(MockMvcRequestBuilders.delete("/books/{id}", 1)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }
@@ -184,20 +171,16 @@ public class BookControllerTest {
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "USER")
     public void disableBookReturnStatus_403() throws Exception {
-        
         mockMvc.perform(post("/books/status/{id}/disabled", 1)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
-        
     }
     
     @DisplayName("enable book with admin and return status 200")
     @Test
     @WithMockUser(username = "test1@gmail.com", password = "123", roles = "ADMIN")
     public void disableBookReturnStatus_200() throws Exception {
-        assertDoesNotThrow(() -> {
-            bookService.enableBook(  1,false);
-        });
+        assertDoesNotThrow(() -> bookService.enableBook(1, false));
         mockMvc.perform(post("/books/status/{id}/disabled", 1)
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
     }

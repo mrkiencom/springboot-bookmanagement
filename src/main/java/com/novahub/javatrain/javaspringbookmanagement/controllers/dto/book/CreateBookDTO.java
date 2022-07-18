@@ -18,7 +18,4 @@ public class CreateBookDTO {
     private String description;
 
     private String image;
-
-    
-
 }

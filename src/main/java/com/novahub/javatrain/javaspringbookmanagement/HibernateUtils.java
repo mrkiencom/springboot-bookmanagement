@@ -11,10 +11,10 @@ import org.hibernate.service.ServiceRegistry;
 
 public class HibernateUtils {
 
-    private static  SessionFactory sessionFactory = buildSessionFactory();
+    private static final SessionFactory sessionFactory = buildSessionFactory();
 
     static SessionFactory buildSessionFactory() {
-        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder() //
+        ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
                 .configure()
                 .build();
         Metadata metadata = new MetadataSources(serviceRegistry).getMetadataBuilder().build();
@@ -24,8 +24,5 @@ public class HibernateUtils {
     public static SessionFactory getSessionFactory() {
         return sessionFactory;
     }
-
-    public static void close() {
-        getSessionFactory().close();
-    }
+     
 }

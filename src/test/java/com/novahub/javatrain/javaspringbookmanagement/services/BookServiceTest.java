@@ -33,7 +33,7 @@ public class BookServiceTest {
     AuthService authService;
     
     @Test
-    public void createNewBook_Success(){
+    public void createNewBook_Success() {
         CreateBookDTO createBookDTO = BookFaker.mockCreateBook;
         final Book book = Book.builder()
                 .title(createBookDTO.getTitle())
@@ -44,19 +44,19 @@ public class BookServiceTest {
                 .build();
         
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-        Book savedBook = bookService.createNewBook( createBookDTO);
+        Book savedBook = bookService.createNewBook(createBookDTO);
         verify(bookRepository).save(any(Book.class));
         assertEquals(book, savedBook);
     }
     
     @Test
-    public void getBookById_ThorwIsNotFound(){
-        BookNotFoundException exception = assertThrows(BookNotFoundException.class,() ->bookService.getBookById(1L));
-        assertEquals(exception.getMessage(),String.format("Book with id %s could not be found", 1L));
+    public void getBookById_ThorwIsNotFound() {
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> bookService.getBookById(1L));
+        assertEquals(exception.getMessage(), String.format("Book with id %s could not be found", 1L));
     }
     
     @Test
-    public void getBookById_Success(){
+    public void getBookById_Success() {
         when(authService.getMe()).thenReturn(UserFaker.createUser());
         Book book = BookFaker.createBook();
         when(bookRepository.findBookById(1L)).thenReturn(Optional.of(book));
@@ -64,8 +64,8 @@ public class BookServiceTest {
     }
     
     @Test
-    public void editBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
+    public void editBook_Success() {
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()));
         
         Book editBook = BookFaker.createBook();
         editBook.setTitle(BookFaker.mockCreateBook.getTitle());
@@ -74,69 +74,64 @@ public class BookServiceTest {
         
         when(bookRepository.save(any(Book.class))).thenReturn(editBook);
         when(authService.getMe()).thenReturn(UserFaker.createUser());
-        assertDoesNotThrow(()->{
-            bookService.editBook( BookFaker.editBookDTO,1L);
-        });
+        assertDoesNotThrow(() -> bookService.editBook(BookFaker.editBookDTO, 1L));
     }
     
     @Test
-    public void editBook_ThrowNotFoundExeption(){
-        BookNotFoundException exception = assertThrows(BookNotFoundException.class,() ->bookService.deleteBook(1L));
-        assertEquals(exception.getMessage(),String.format("Book with id %s could not be found", 1L));
+    public void editBook_ThrowNotFoundExeption() {
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> bookService.deleteBook(1L));
+        assertEquals(exception.getMessage(), String.format("Book with id %s could not be found", 1L));
     }
     
     @Test
-    public void enableBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
+    public void enableBook_Success() {
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()));
         
         Book book = BookFaker.createBook();
         book.setEnabled(false);
         
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-        assertDoesNotThrow(()->{
-            bookService.enableBook(1L,false);
-        });
-    }
-    @Test
-    public void enableBook_ThrowNotFoundExeption(){
-        BookNotFoundException exception = assertThrows(BookNotFoundException.class,() ->bookService.enableBook(1L,false));
-        assertEquals(exception.getMessage(),String.format("Book with id %s could not be found", 1L));
+        assertDoesNotThrow(() -> bookService.enableBook(1L, false));
     }
     
     @Test
-    public void deleteBook_Success(){
-        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()) );
+    public void enableBook_ThrowNotFoundExeption() {
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> bookService.enableBook(1L, false));
+        assertEquals(exception.getMessage(), String.format("Book with id %s could not be found", 1L));
+    }
+    
+    @Test
+    public void deleteBook_Success() {
+        when(bookRepository.findBookById(1L)).thenReturn(Optional.of(BookFaker.createBook()));
         
         Book book = BookFaker.createBook();
         book.setEnabled(false);
-        assertDoesNotThrow(()->{
-            bookService.deleteBook(1L);
-        });
+        assertDoesNotThrow(() -> bookService.deleteBook(1L));
     }
     
     @Test
-    public void deleteBook_ThrowNotFoundExeption(){
-        BookNotFoundException exception = assertThrows(BookNotFoundException.class,() ->bookService.deleteBook(1L));
-        assertEquals(exception.getMessage(),String.format("Book with id %s could not be found", 1L));
+    public void deleteBook_ThrowNotFoundExeption() {
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> bookService.deleteBook(1L));
+        assertEquals(exception.getMessage(), String.format("Book with id %s could not be found", 1L));
     }
     
     @Test
-    public void getListBook_Success_While_ExitedBook(){
+    public void getListBook_Success_While_ExitedBook() {
         final String search = "test";
         final String orderBy = "test";
         List<Book> bookList = new ArrayList<>();
         bookList.add(BookFaker.createBook());
-     
-        when(bookRepository.findAll(search,orderBy)).thenReturn(bookList);
-        assertEquals(bookService.getListBooks(search,orderBy),bookList);
+        
+        when(bookRepository.findAll(search, orderBy)).thenReturn(bookList);
+        assertEquals(bookService.getListBooks(search, orderBy), bookList);
     }
     
     @Test
-    public void getListBook_Success_While_NotExistedBook(){
+    public void getListBook_Success_While_NotExistedBook() {
         final String search = "test";
         final String orderBy = "test";
         List<Book> bookListEmpty = new ArrayList<>();
-        assertEquals(bookService.getListBooks(search,orderBy),bookListEmpty);
+        assertEquals(bookService.getListBooks(search, orderBy), bookListEmpty);
     }
     
 }

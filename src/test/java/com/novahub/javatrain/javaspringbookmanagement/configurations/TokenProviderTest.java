@@ -1,7 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.configurations;
 
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignInDTO;
-import com.novahub.javatrain.javaspringbookmanagement.fakes.JwtFacker;
+import com.novahub.javatrain.javaspringbookmanagement.fakes.JwtFaker;
 import com.novahub.javatrain.javaspringbookmanagement.fakes.UserFaker;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,70 +27,68 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @RunWith(SpringRunner.class)
 public class TokenProviderTest {
     
-    
     @InjectMocks
     TokenProvider tokenProvider;
     
     @Test
     public void getUsernameFromToken_Success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
-        assertEquals(tokenProvider.getUsernameFromToken(JwtFacker.token), "kien303@gmail.com");
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
+        assertEquals(tokenProvider.getUsernameFromToken(JwtFaker.token), "kien303@gmail.com");
     }
     
     @Test
     public void getClaimsFromJwtToken_Success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
-        assertEquals(tokenProvider.getClaimsFromJwtToken(JwtFacker.token).getSubject(), "kien303@gmail.com");
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
+        assertEquals(tokenProvider.getClaimsFromJwtToken(JwtFaker.token).getSubject(), "kien303@gmail.com");
     }
     
     @Test
     public void validateToken_fail() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
         UserDetails userDetails = Mockito.mock(UserDetails.class);
-        assertEquals(tokenProvider.validateToken(JwtFacker.token, userDetails), false);
+        assertEquals(tokenProvider.validateToken(JwtFaker.token, userDetails), false);
     }
     
     @Test
     public void isTokenExpired_fail() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
-        assertEquals(tokenProvider.isTokenExpired(JwtFacker.token), false);
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
+        assertEquals(tokenProvider.isTokenExpired(JwtFaker.token), false);
         
     }
     
     @Test
     public void getAllClaimsFromToken_success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
-        assertEquals(tokenProvider.getAllClaimsFromToken(JwtFacker.token).getSubject(), "kien303@gmail.com");
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
+        assertEquals(tokenProvider.getAllClaimsFromToken(JwtFaker.token).getSubject(), "kien303@gmail.com");
     }
     
     @Test
     public void getExpirationDateFromToken_Success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
         String target = "Wed Aug 10 09:29:17 ICT 2022";
-        assertEquals(tokenProvider.getExpirationDateFromToken(JwtFacker.token).toString(), target);
+        assertEquals(tokenProvider.getExpirationDateFromToken(JwtFaker.token).toString(), target);
     }
     
     @Test
     public void getClaimFromToken_success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
         String target = "Wed Aug 10 09:29:17 ICT 2022";
-        assertEquals(tokenProvider.getClaimFromToken(JwtFacker.token, Claims::getExpiration).toString(), target);
+        assertEquals(tokenProvider.getClaimFromToken(JwtFaker.token, Claims::getExpiration).toString(), target);
         
     }
     
     @Test
     public void generateToken_success() {
-        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFacker.signingKey);
-        SignInDTO signInDTO = UserFaker.signInDTO;
+        String signingKey = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb29rU3RvcmUifQ.xW8fVhGB66Ie3vL8hZoAOuntDXokWaxv3Nkl5V3V_ao";
+    
+        ReflectionTestUtils.setField(tokenProvider, "signingKey", JwtFaker.signingKey);
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(UserFaker.createUser().getEmail(), UserFaker.createUser().getPassword()));
         Authentication authentication = Mockito.mock(Authentication.class);
-       String signingKey = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJCb29rU3RvcmUifQ.xW8fVhGB66Ie3vL8hZoAOuntDXokWaxv3Nkl5V3V_ao";
-    
-    
         final String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        
         String jwt = Jwts.builder()
                 .setSubject(UserFaker.createUser().getEmail())
                 .claim(AUTHORITIES_KEY, authorities)
@@ -101,9 +98,5 @@ public class TokenProviderTest {
                 .compact();
         
         assertEquals(tokenProvider.generateToken(authentication, UserFaker.createUser().getEmail()), jwt);
-    }
-    
-    public void getAuthentication(){
-    
     }
 }

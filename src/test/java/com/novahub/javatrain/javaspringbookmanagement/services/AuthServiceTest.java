@@ -4,7 +4,7 @@ import com.novahub.javatrain.javaspringbookmanagement.configurations.TokenProvid
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.AuthToken;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignInDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignUpDTO;
-import com.novahub.javatrain.javaspringbookmanagement.exceptions.UserExistedExeption;
+import com.novahub.javatrain.javaspringbookmanagement.exceptions.UserExistedException;
 import com.novahub.javatrain.javaspringbookmanagement.fakes.UserFaker;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.RoleRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.UserRepository;
@@ -23,8 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -64,7 +63,7 @@ public class AuthServiceTest {
         signUpDTO.setEmail("kien@gmail.com");
         when(userRepository.findUserByEmail("kien@gmail.com")).thenReturn(UserFaker.mockUserExisted);
          assertThrows(
-                UserExistedExeption.class,
+                UserExistedException.class,
                 () -> authService.signUp(signUpDTO));
     }
     
@@ -100,10 +99,6 @@ public class AuthServiceTest {
         UserDetails userDetails = Mockito.mock(UserDetails.class);
         when(userDetails.getUsername()).thenReturn("test@gmail.com");
         when(userRepository.findUserByEmail(signInDTO.getEmail())).thenReturn(user);
-        assertEquals(authService.getMe(), null);
-    
-      
-        
+        assertNull(authService.getMe());
     }
-    
 }

@@ -6,7 +6,7 @@ import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundExc
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -15,18 +15,18 @@ import java.util.Optional;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class BookService {
-    @Autowired
-    private BookRepository booksRepository;
     
-    @Autowired
-    private AuthService authService;
+    private final BookRepository booksRepository;
+    
+    private final AuthService authService;
     
     public Book getBookById(long id) {
         return getBookOrThrow(id);
     }
     
-    public Book createNewBook( final CreateBookDTO requestCreateBookDto) {
+    public Book createNewBook(final CreateBookDTO requestCreateBookDto) {
         User user = this.authService.getMe();
         final Book book = Book.builder()
                 .title(requestCreateBookDto.getTitle())
@@ -40,15 +40,13 @@ public class BookService {
     
     public Book checkExistedBookById(User user, long id) {
         Book book = getBookOrThrow(id);
-        
         if (book.getUser().getId() != user.getId()) {
             throw new BookNotFoundException(id);
         }
-        
         return book;
     }
     
-    public void editBook( final EditBookDTO editBookDto, long id) {
+    public void editBook(final EditBookDTO editBookDto, long id) {
         User user = this.authService.getMe();
         Book existedBook = this.checkExistedBookById(user, id);
         existedBook.setTitle(editBookDto.getTitle());
@@ -57,7 +55,6 @@ public class BookService {
         booksRepository.save(existedBook);
     }
     
-    
     public void deleteBook(long id) {
         booksRepository.delete(getBookOrThrow(id));
     }
@@ -65,7 +62,6 @@ public class BookService {
     public List<Book> getListBooks(String search, String orderBy) {
         return booksRepository.findAll(search, orderBy);
     }
-    
     
     public void enableBook(long id, boolean isEnabled) {
         Book book = getBookOrThrow(id);
@@ -80,6 +76,4 @@ public class BookService {
         }
         return book.get();
     }
-    
-    
 }

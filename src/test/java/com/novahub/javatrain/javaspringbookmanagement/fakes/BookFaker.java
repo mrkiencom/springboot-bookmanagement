@@ -14,7 +14,6 @@ public class BookFaker {
                 .user(UserFaker.createUser())
                 .build();
     }
-    
     public static final CreateBookDTO mockCreateBook = CreateBookDTO.builder().title("test").author("test").description("test").build();
     public static final EditBookDTO editBookDTO = EditBookDTO.builder().title("test").author("test").description("test").build();
 }
