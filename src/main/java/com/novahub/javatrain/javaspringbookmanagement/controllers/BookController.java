@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -63,7 +65,7 @@ public class BookController {
     }
 
     @GetMapping("/test-get")
-    public BookStoreDTO get(){
-        return booksServices.importBookFromStore();
+    public void test() throws IOException {
+        booksServices.getBook();
     }
 }
