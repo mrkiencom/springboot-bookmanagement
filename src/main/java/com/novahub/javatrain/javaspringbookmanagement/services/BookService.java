@@ -1,5 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.services;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.BookStoreDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundException;
@@ -8,6 +9,7 @@ import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -75,5 +77,11 @@ public class BookService {
             throw new BookNotFoundException(id);
         }
         return book.get();
+    }
+
+    public BookStoreDTO importBookFromStore(){
+        WebClient client = WebClient.create("https://api.itbook.store/1.0/new");
+        BookStoreDTO bookFromStore = client.get().retrieve().bodyToMono(BookStoreDTO.class).block();
+        return bookFromStore;
     }
 }
