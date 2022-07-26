@@ -1,11 +1,13 @@
 package com.novahub.javatrain.javaspringbookmanagement.configurations;
 
+import com.novahub.javatrain.javaspringbookmanagement.exceptions.EmailInvalidException;
 import com.novahub.javatrain.javaspringbookmanagement.services.UserDetailsServiceImpl;
-import com.novahub.javatrain.javaspringbookmanagement.services.UserInfoDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,10 +19,9 @@ import java.io.IOException;
 
 import static com.novahub.javatrain.javaspringbookmanagement.constants.Constants.HEADER_STRING;
 import static com.novahub.javatrain.javaspringbookmanagement.constants.Constants.TOKEN_PREFIX;
-
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     
-//    @Resource
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
     
@@ -32,27 +33,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = req.getHeader(HEADER_STRING);
         String username = null;
         String authToken = null;
-        
         if (header != null && header.startsWith(TOKEN_PREFIX)) {
             authToken = header.replace(TOKEN_PREFIX,"");
             try {
                 username = jwtTokenUtil.getUsernameFromToken(authToken);
             } catch (IllegalArgumentException e) {
-                logger.error("an error occured during getting username from token", e);
+                throw new EmailInvalidException();
             } catch (ExpiredJwtException e) {
                 logger.warn("the token is expired and not valid anymore", e);
             }
-            
         } else {
             logger.warn("couldn't find bearer string, will ignore the header");
         }
-        
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            
-            UserInfoDetailsImpl userDetails = userDetailsService.loadUserByUsername(username);
-            
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if(userDetails != null){
-                
                 if (jwtTokenUtil.validateToken(authToken, userDetails)) {
                     UsernamePasswordAuthenticationToken authentication = jwtTokenUtil.getAuthentication(authToken, SecurityContextHolder.getContext().getAuthentication(), userDetails);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
@@ -61,7 +56,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-        
         chain.doFilter(req, res);
     }
 }

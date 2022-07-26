@@ -1,57 +1,36 @@
 package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
-import com.novahub.javatrain.javaspringbookmanagement.configurations.TokenProvider;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.AuthToken;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.RequestSignInDto;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.RequestSignUpDto;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignInDTO;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.auth.SignUpDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
-import com.novahub.javatrain.javaspringbookmanagement.sercurity.UserInfo;
 import com.novahub.javatrain.javaspringbookmanagement.services.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/auths")
 public class AuthController {
     
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
     
-    @Autowired
-    private TokenProvider jwtTokenUtil;
-    @Autowired
-    private AuthService authService;
-    
-    @Autowired
-    private UserInfo userInfo;
+    private final AuthService authService;
     
     @PostMapping("/sign-up")
-    private User signUp(@Valid @RequestBody RequestSignUpDto requestSignUpDto) {
-        return authService.signUp(requestSignUpDto);
+    private User signUp(@Valid @RequestBody SignUpDTO signUpDTO) {
+        return authService.signUp(signUpDTO);
     }
     
     @PostMapping("/sign-in")
-    public ResponseEntity<?> login(@Valid @RequestBody RequestSignInDto requestSignInDto) {
-        final Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        requestSignInDto.getEmail(),
-                        requestSignInDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = jwtTokenUtil.generateToken(authentication,requestSignInDto.getEmail());
-        return ResponseEntity.ok(new AuthToken(token));
+    public AuthToken login(@Valid @RequestBody SignInDTO signInDTO) {
+        return authService.signIn(signInDTO);
     }
     
-    @GetMapping("/getme" )
-    private User getInfo( ) {
-        return userInfo.getInfo();
-    }
 }

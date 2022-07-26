@@ -1,12 +1,12 @@
 package com.novahub.javatrain.javaspringbookmanagement.services;
 
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.exceptions.BookNotFoundException;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;
@@ -15,68 +15,65 @@ import java.util.Optional;
 
 @Repository
 @Transactional
+@RequiredArgsConstructor
 public class BookService {
-    @Autowired
-    private BookRepository booksRepository;
     
-    public Book getBookById(User user, long id) {
-        Optional<Book> book = booksRepository.findBookByIdAndUser(id, user);
-        if (book.isEmpty()) {
-            throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
-        } else {
-            return book.get();
-        }
+    private final BookRepository booksRepository;
+    
+    private final AuthService authService;
+    
+    public Book getBookById(long id) {
+        return getBookOrThrow(id);
     }
     
-    public Book createNewBook(User user, final RequestCreateBookDto requestCreateBookDto) {
+    public Book createNewBook(final CreateBookDTO requestCreateBookDto) {
+        User user = this.authService.getMe();
         final Book book = Book.builder()
                 .title(requestCreateBookDto.getTitle())
                 .author(requestCreateBookDto.getAuthor())
                 .description(requestCreateBookDto.getDescription())
-                .enabled(false).user(user)
+                .enabled(false)
+                .user(user)
                 .build();
         return booksRepository.save(book);
     }
     
     public Book checkExistedBookById(User user, long id) {
-        Optional<Book> bookOptional = booksRepository.findBookByIdAndUser(id, user);
-        if(bookOptional.isEmpty()){
-            throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
-        }else{
-            return bookOptional.get();
+        Book book = getBookOrThrow(id);
+        if (book.getUser().getId() != user.getId()) {
+            throw new BookNotFoundException(id);
         }
+        return book;
     }
     
-    public void editBook(User user, RequestEditBookDto editBookDto, long id) {
+    public void editBook(final EditBookDTO editBookDto, long id) {
+        User user = this.authService.getMe();
         Book existedBook = this.checkExistedBookById(user, id);
         existedBook.setTitle(editBookDto.getTitle());
         existedBook.setAuthor(editBookDto.getAuthor());
-        existedBook.setDescription(editBookDto.getAuthor());
-        existedBook.setEnabled(editBookDto.isEnabled());
+        existedBook.setDescription(editBookDto.getDescription());
         booksRepository.save(existedBook);
     }
     
-    
     public void deleteBook(long id) {
-        Optional<Book> book = booksRepository.findBookById(id);
-        if(book.isEmpty()){
-            throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
-        }else{
-            booksRepository.delete(book.get());
-        }
+        booksRepository.delete(getBookOrThrow(id));
     }
     
     public List<Book> getListBooks(String search, String orderBy) {
         return booksRepository.findAll(search, orderBy);
     }
     
+    public void enableBook(long id, boolean isEnabled) {
+        Book book = getBookOrThrow(id);
+        book.setEnabled(isEnabled);
+        booksRepository.save(book);
+    }
     
-    public void enableBook(long id) {
+    private Book getBookOrThrow(long id) {
         Optional<Book> book = booksRepository.findBookById(id);
         if (book.isEmpty()) {
-            throw new BookNotFoundException(String.format("Book with id %s could not be found", id));
+            throw new BookNotFoundException(id);
         }
-        book.get().setEnabled(true);
-        booksRepository.save(book.get());
+        return book.get();
     }
 }

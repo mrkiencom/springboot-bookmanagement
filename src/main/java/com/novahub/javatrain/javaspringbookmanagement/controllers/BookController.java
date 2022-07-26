@@ -1,12 +1,11 @@
 package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestCreateBookDto;
-import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.RequestEditBookDto;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.entities.Book;
-import com.novahub.javatrain.javaspringbookmanagement.sercurity.UserInfo;
 import com.novahub.javatrain.javaspringbookmanagement.services.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,30 +13,29 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
     
-    @Autowired
-    private BookService booksServices;
-    @Autowired
-    private UserInfo userInfo;
+    private final BookService booksServices;
     
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
     
     @GetMapping("{id}")
+    @ResponseBody
     public Book getBookById(@PathVariable long id) {
-        return booksServices.getBookById(userInfo.getInfo(), id);
+        return booksServices.getBookById(id);
     }
     
     @PostMapping
-    public Book createNewBook(@Valid @RequestBody RequestCreateBookDto requestCreateBookDto) {
-        return booksServices.createNewBook(userInfo.getInfo(), requestCreateBookDto);
+    public Book createNew(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
+        
+        return booksServices.createNewBook(requestCreateBookDto);
     }
     
     @PutMapping(value = "{id}")
-    public void editBook(@Valid @RequestBody RequestEditBookDto editBookDto, @PathVariable long id) {
-        booksServices.editBook(userInfo.getInfo(), editBookDto, id);
+    public void editBook(@Valid @RequestBody EditBookDTO editBookDto, @PathVariable long id) {
+        booksServices.editBook( editBookDto, id);
     }
     
     @GetMapping
@@ -51,9 +49,15 @@ public class BookController {
         booksServices.deleteBook(id);
     }
     
-    @PostMapping("/enable/{id}")
+    @PostMapping("/status/{id}/enabled")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void enableBook(@PathVariable long id) {
-        booksServices.enableBook(id);
+        booksServices.enableBook(id, true);
+    }
+    
+    @PostMapping("/status/{id}/disabled")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void disableBook(@PathVariable long id) {
+        booksServices.enableBook(id, false);
     }
 }

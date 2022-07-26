@@ -40,7 +40,7 @@ public class Book {
     @Column()
     private String image;
 
-    @Column(nullable = false)
+    @Column()
     private boolean enabled;
 
     @ManyToOne(fetch = FetchType.LAZY)
