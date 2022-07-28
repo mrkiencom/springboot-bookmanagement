@@ -49,13 +49,13 @@ public class DataSeedingListener implements ApplicationListener<ContextRefreshed
     }
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        addRoleIfMissing("ADMIN");
-        addRoleIfMissing("USER");
+        addRoleIfMissing("ROLE_ADMIN");
+        addRoleIfMissing("ROLE_USER");
         addAdmin("admin@gmail.com","123");
         addAdmin("admin2@gmail.com","1233");
         if(signingKey == null || signingKey.length() ==0){
             String jws = Jwts.builder()
-                    .setSubject("BookStore")
+                    .setSubject("BookStoreDTO")
                     .signWith(SignatureAlgorithm.HS256, "BookStoreApi").compact();
             System.out.println("Use this jwt key:");
             System.out.println("jwt-key=" + jws);

@@ -43,6 +43,18 @@ public class Book {
     @Column()
     private boolean enabled;
 
+    @Column()
+    private String subtitle;
+
+    @Column()
+    private String isbn13;
+
+    @Column()
+    private String price;
+
+    @Column()
+    private String url;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @JsonIgnore

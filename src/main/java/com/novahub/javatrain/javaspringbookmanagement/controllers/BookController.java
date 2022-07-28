@@ -1,5 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.controllers;
 
+import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.BookStoreDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.EditBookDTO;
 import com.novahub.javatrain.javaspringbookmanagement.repositories.BookRepository;
@@ -9,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,9 +21,7 @@ import java.util.List;
 public class BookController {
     
     private final BookService booksServices;
-    
-    private final BookRepository bookRepository;
-    
+
     @GetMapping("{id}")
     @ResponseBody
     public Book getBookById(@PathVariable long id) {
@@ -29,7 +30,6 @@ public class BookController {
     
     @PostMapping
     public Book createNew(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
-        
         return booksServices.createNewBook(requestCreateBookDto);
     }
     
@@ -59,5 +59,10 @@ public class BookController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void disableBook(@PathVariable long id) {
         booksServices.enableBook(id, false);
+    }
+
+    @GetMapping("/test-get")
+    public void test() throws IOException{
+         booksServices.ExportToExcel();
     }
 }
