@@ -28,7 +28,7 @@ public class TokenProvider {
     
     
     public Claims getClaimsFromJwtToken(String token) {
-        return Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token).getBody();
+        return Jwts.parser().setSigningKey(signingKey.getBytes()).parseClaimsJws(token).getBody();
     }
     
     public String getUsernameFromToken(String token) {

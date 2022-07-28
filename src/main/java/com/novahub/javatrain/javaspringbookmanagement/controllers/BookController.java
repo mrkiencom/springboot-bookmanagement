@@ -21,9 +21,7 @@ import java.util.List;
 public class BookController {
     
     private final BookService booksServices;
-    
-    private final BookRepository bookRepository;
-    
+
     @GetMapping("{id}")
     @ResponseBody
     public Book getBookById(@PathVariable long id) {
@@ -32,7 +30,6 @@ public class BookController {
     
     @PostMapping
     public Book createNew(@Valid @RequestBody CreateBookDTO requestCreateBookDto) {
-        
         return booksServices.createNewBook(requestCreateBookDto);
     }
     
@@ -65,7 +62,7 @@ public class BookController {
     }
 
     @GetMapping("/test-get")
-    public void test() throws IOException {
-        booksServices.getBook();
+    public void test() throws IOException{
+         booksServices.ExportToExcel();
     }
 }

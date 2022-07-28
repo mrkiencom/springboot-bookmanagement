@@ -1,5 +1,6 @@
 package com.novahub.javatrain.javaspringbookmanagement.services;
 
+import com.novahub.javatrain.javaspringbookmanagement.constants.Constants;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.BookFromStoreDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.BookStoreDTO;
 import com.novahub.javatrain.javaspringbookmanagement.controllers.dto.book.CreateBookDTO;
@@ -13,13 +14,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -88,26 +89,47 @@ public class BookService {
         return book.get();
     }
 
-    public BookStoreDTO importBookFromStore(){
-        WebClient client = WebClient.create("https://api.itbook.store/1.0/new");
+    public BookStoreDTO getBookFromStore() {
+        WebClient client = WebClient.create(Constants.BOOKSTORE_URL);
         BookStoreDTO bookFromStore = client.get().retrieve().bodyToMono(BookStoreDTO.class).block();
         return bookFromStore;
     }
 
-    @Scheduled(cron = "53 11 * * *")
-    public void test(){
-        System.out.println("test");
+    @Scheduled(cron = Constants.EXPORT_TO_EXCEL_TIME )
+    public void scheduleTaskUsingCronExpression() throws IOException {
+        ExportToExcel();
     }
 
-    public void getBook() throws IOException {
-        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+    public void ExportToExcel() throws IOException {
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
         String currentDateTime = dateFormatter.format(new Date());
-        String headerValue = "book_" + currentDateTime + ".xlsx";
-        BookStoreDTO listBook = importBookFromStore();
-        BookExcelExporter excelExporter = new BookExcelExporter(listBook.getBooks());
-        File file = new File("/Users/novahub/Desktop/"+headerValue);
+        String nameFile = "book_" + currentDateTime + ".xlsx";
+        List<Book> listBooks = createBookFromStore();
+        BookExcelExporter excelExporter = new BookExcelExporter(listBooks);
+        File file = new File(Constants.PARTH_FOLDER + nameFile);
         file.createNewFile();
-        FileOutputStream outputStream = new FileOutputStream(file,false);
+        FileOutputStream outputStream = new FileOutputStream(file, false);
         excelExporter.export(outputStream);
+    }
+
+    public List<Book> createBookFromStore(){
+        List<BookFromStoreDTO> listBookStore = getBookFromStore().getBooks();
+        List<Book> listBook = new ArrayList<Book>();
+        for(BookFromStoreDTO book:listBookStore){
+            Book newBook = Book.builder()
+                    .title(book.getTitle())
+                    .author("BookStore")
+                    .description("Book from store")
+                    .image(book.getImage())
+                    .subtitle(book.getSubtitle())
+                    .enabled(true)
+                    .subtitle(book.getSubtitle())
+                    .isbn13(book.getIsbn13())
+                    .price(book.getPrice())
+                    .url(book.getUrl())
+                    .build();
+            listBook.add(newBook);
+        }
+        return booksRepository.saveAll(listBook);
     }
 }
